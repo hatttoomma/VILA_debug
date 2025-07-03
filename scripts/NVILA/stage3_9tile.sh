@@ -1,14 +1,15 @@
 #!/bin/bash
 
 DEFAULT_RUN_NAME="stage3_9tile"
-DEFAULT_GLOBAL_TRAIN_BATCH_SIZE=1024
-DEFAULT_GRADIENT_ACCUMULATION_STEPS=4
-STAGE2_PATH="runs/train/stage2_9tile/model"
-DATA_MIXTURE=""
+DEFAULT_GLOBAL_TRAIN_BATCH_SIZE=1
+DEFAULT_GRADIENT_ACCUMULATION_STEPS=1
+STAGE2_PATH="Efficient-Large-Model/NVILA-8B"
+DATA_MIXTURE="lmms_vstar"
 
 source scripts/setups/train.sh
 
 export NCCL_IB_TIMEOUT=31
+export WANDB_MODE=offline
 
 torchrun \
     --nnodes=$NNODES --nproc_per_node=$GPUS_PER_NODE --node_rank=$NODE_RANK \
@@ -24,9 +25,9 @@ torchrun \
         --s2_resize_output_to_scale_idx -1 \
         --mm_vision_select_feature cls_patch \
         --mm_projector mlp_downsample \
-        --tune_vision_tower True \
+        --tune_vision_tower False \
         --tune_mm_projector True \
-        --tune_language_model True \
+        --tune_language_model False \
         --mm_vision_select_layer -2 \
         --mm_use_im_start_end False \
         --mm_use_im_patch_token False \
@@ -41,7 +42,7 @@ torchrun \
         --save_strategy steps \
         --save_steps 20 \
         --save_total_limit 1 \
-        --learning_rate 1.5e-5 \
+        --learning_rate 0 \
         --weight_decay 0. \
         --warmup_ratio 0.03 \
         --lr_scheduler_type cosine \

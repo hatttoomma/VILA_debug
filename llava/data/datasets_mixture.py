@@ -53,6 +53,93 @@ def add_dataset(dataset):
 
 
 def register_datasets_mixtures():
-    pass
+    chartqa = Dataset(
+        dataset_name="chartqa",
+        dataset_type="torch",
+        data_path="/home/qyw/data/chartqa_new/data.json",
+        image_path="/home/qyw/data/chartqa_new/images/"
+    )
+    add_dataset(chartqa)
+
+    ai2d = Dataset(
+        dataset_name="ai2d",
+        dataset_type="torch",
+        data_path="/home/qyw/data/ai2d(internvl)/data.json",
+        image_path="/home/qyw/data/ai2d(internvl)/images/"
+    )
+    add_dataset(ai2d)
+
+    allava_instruct_laion4v = Dataset(
+        dataset_name = "allava_instruct_laion4v",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/allava_instruct_laion4v/data.json",
+        image_path = "/home/qyw/data/allava_instruct_laion4v/images/"
+    )
+    add_dataset(allava_instruct_laion4v)
+
+    dvqa = Dataset(
+        dataset_name = "dvqa",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/dvqa/data.json",
+        image_path = "/home/qyw/data/dvqa/images/"
+    )
+    add_dataset(dvqa)
+
+    sharegpt4o = Dataset(
+        dataset_name = "sharegpt4o",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/sharegpt4o/data.json",
+        image_path = "/home/qyw/data/sharegpt4o/images/"
+    )
+    add_dataset(sharegpt4o)
+
+    textocr = Dataset(
+        dataset_name = "textocr",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/textocr/data.json",
+        image_path = "/home/qyw/data/textocr/images/"
+    )
+    add_dataset(textocr)
+
+    LLaVA_CC3M_Pretrain_595K = Dataset(
+        dataset_name = "LLaVA_CC3M_Pretrain_595K",
+        dataset_type = "torch",
+        data_path = "../data/LLaVA-CC3M-Pretrain-595K/LLaVA-CC3M-Pretrain-595K/chat.json",
+        image_path = "../data/LLaVA-CC3M-Pretrain-595K/LLaVA-CC3M-Pretrain-595K/images/"
+    )
+    add_dataset(LLaVA_CC3M_Pretrain_595K)
+
+    llava_next = Dataset(
+        dataset_name = "llava_next",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/LLaVA-NeXT-Data/llava_next_raw_format/llava_next_raw_format_processed.json",
+        image_path = "/home/qyw/data/LLaVA-NeXT-Data/llava_next_raw_format/"
+    )
+    add_dataset(llava_next)
+
+    docvqa = Dataset(
+        dataset_name = "docvqa",
+        dataset_type = "torch",
+        data_path = "/home/qyw/data/docvqa/data.json",
+        image_path = "/home/qyw/data/docvqa/images"
+    )
+    add_dataset(docvqa)
+
+    #debugging(test dataset)
+    lmms_chartqa_test = Dataset(
+        dataset_name= "chartqa_test",
+        dataset_type= "torch",
+        data_path = "/home/qyw/VILA/transformed_data.json",
+        image_path = "/home/qyw/data/lmms_chartqa/ChartQA/ChartQA Dataset/test/png",
+    )
+    add_dataset(lmms_chartqa_test)
+
+    lmms_vstar = Dataset(
+        dataset_name= "vstar",
+        dataset_type= 'torch',
+        data_path= "/home/qyw/data/vstar/data_00000.json",
+        image_path= "/home/qyw/data/vstar/images",
+    )
+    add_dataset(lmms_vstar)
 
 

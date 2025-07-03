@@ -411,3 +411,12 @@ textvqa_val:
         - regression
     metrics:
         accuracy: accuracy
+        
+lmms-vstar:
+    tags:
+        - core
+        - local
+    metrics:
+        average: results/vstar/average,none
+        direct_attributes: results/vstar/direct_attributes,none
+        relative_position: results/vstar/relative_position,none

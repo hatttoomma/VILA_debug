@@ -31,7 +31,7 @@ def main() -> None:
     parser.add_argument("--model-path", "-m", type=str, required=True)
     parser.add_argument("--model-name", type=str, default=None)
     parser.add_argument("--conv-mode", "-c", type=str, required=True)
-    parser.add_argument("--nproc-per-node", "-n", type=int, default=8)
+    parser.add_argument("--nproc-per-node", "-n", type=int, default=1)
     parser.add_argument("--tasks", "-t", type=lstr)
     parser.add_argument("--tags-include", "-ti", type=lstr)
     parser.add_argument("--tags-exclude", "-te", type=lstr)
@@ -100,11 +100,10 @@ def main() -> None:
             ]
 
         # Wrap the command with vila-run if not running on SLURM
+        concurrency = 1
         if os.environ.get("SLURM_JOB_ID"):
-            concurrency = 1
             final_cmd = cmd
         else:
-            concurrency = 10
             final_cmd = [f"vila-run -m eval -J {model_name}/{task}"] + cmd
             if args.output_dir is not None:
                 final_cmd = [f"vila-run -m eval -J {model_name}/{task} --output-dir {args.output_dir}/{task}"] + cmd
@@ -127,6 +126,7 @@ def main() -> None:
                     stdout=subprocess.DEVNULL if concurrency > 1 else None,
                     stderr=subprocess.DEVNULL if concurrency > 1 else None,
                     shell=True,
+                    text=True,
                     env=env,
                 )
 
@@ -198,5 +198,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-

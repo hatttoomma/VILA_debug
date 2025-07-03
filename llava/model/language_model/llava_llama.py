@@ -108,6 +108,10 @@ class LlavaLlamaModel(LlavaMetaModel, LlavaMetaForCausalLM, PreTrainedModel):
         **kwargs,
     ) -> Union[Tuple, CausalLMOutputWithPast]:
         self.freezed_module_patch()
+        
+        phase = 'train' if self.training else 'test'
+        generator = torch.Generator()
+        generator.manual_seed(42)
 
         if images is not None:
             if media is not None:
@@ -121,6 +125,11 @@ class LlavaLlamaModel(LlavaMetaModel, LlavaMetaForCausalLM, PreTrainedModel):
         if inputs_embeds is None:
             inputs_embeds, labels, attention_mask = self._embed(input_ids, media, media_config, labels, attention_mask)
 
+
+        # inputs_embeds = torch.randn([1,3100,3584], generator=generator,dtype=torch.float32, device='cpu').to(inputs_embeds.device).to(inputs_embeds.dtype)
+        # attention_mask = torch.ones([1,3100], dtype=torch.long, device='cpu').to(inputs_embeds.device).to(attention_mask.dtype)
+        # labels = torch.zeros([1,3100], dtype=torch.long, device='cpu').to(inputs_embeds.device).to(labels.dtype)
+
         if packing and self.training and not dpo_forward:
             if seqlens_in_batch is None:
                 seqlens_in_batch = torch.sum(attention_mask, dim=1)
@@ -130,6 +139,9 @@ class LlavaLlamaModel(LlavaMetaModel, LlavaMetaForCausalLM, PreTrainedModel):
                 inputs_embeds, attention_mask, position_ids, labels
             )
 
+
+        if not os.path.isfile(f'debugfile/llm_inputs_{phase}.pt'):
+            torch.save(inputs_embeds, f'debugfile/llm_inputs_{phase}.pt')
         outputs = self.llm(
             inputs_embeds=inputs_embeds,
             attention_mask=attention_mask,
@@ -138,6 +150,10 @@ class LlavaLlamaModel(LlavaMetaModel, LlavaMetaForCausalLM, PreTrainedModel):
             labels=labels,
             **kwargs,
         )
+        if not os.path.isfile(f'debugfile/llm_outputs_{phase}.pt'):
+            torch.save(outputs.logits, f'debugfile/llm_outputs_{phase}.pt')
+        else:
+            raise ValueError(f'debugfile/llm_outputs_{phase}.pt already exists')
 
         if self.training and getattr(self.config, "time_token_ids", []):
             outputs.loss = soft_cross_entropy(

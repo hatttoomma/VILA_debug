@@ -356,7 +356,18 @@ class LlavaMetaModel(ABC):
         if block_sizes is None:
             block_sizes = [None] * len(images)
         if getattr(self.config, "dynamic_s2", False):
+            generator = torch.Generator()
+            generator.manual_seed(42)
+            # images = (torch.randn(images.shape, generator=generator,dtype=torch.float32, device='cpu')* 0.1).to(images.device).to(images.dtype)
+            phase = 'train' if self.training else 'test'
+            
+            if not os.path.isfile(f'debugfile/images_{phase}.pt'):
+                torch.save(images, f'debugfile/images_{phase}.pt')
             image_features = self.get_vision_tower()(images)
+            
+            if not os.path.isfile(f'debugfile/image_features_{phase}.pt'):
+                torch.save(image_features, f'debugfile/image_features_{phase}.pt')
+
             image_features, new_block_sizes = self.merge_features_for_dynamic_s2(image_features, block_sizes)
 
             image_features = [
@@ -366,7 +377,15 @@ class LlavaMetaModel(ABC):
             image_features = torch.cat(
                 [rearrange(x, "b c h w -> b (h w) c") for x in image_features], dim=0
             )  # B * N * C
+            # image_features = torch.randn(image_features.shape, generator=generator,dtype=torch.float32, device='cpu').to(image_features.device).to(image_features.dtype)
+            # if not os.path.isfile(f'debugfile/features_before_mm_projector_{phase}.pt'):
+            #     torch.save(image_features, f'debugfile/features_before_mm_projector_{phase}.pt')
             image_features = self.get_mm_projector()(image_features)
+            if not os.path.isfile(f'debugfile/features_after_mm_projector_{phase}.pt'):
+                torch.save(image_features, f'debugfile/features_after_mm_projector_{phase}.pt')
+            # else:
+            #     raise NotImplementedError("Debug mode is enabled. Please remove the debugfile/features_after_mm_projector_train.pt file to continue.")
+            
             image_features = list(
                 image_features.split([block_size[0] * block_size[1] for block_size in new_block_sizes], dim=0)
             )
@@ -377,6 +396,11 @@ class LlavaMetaModel(ABC):
             image_features = [rearrange(x, "1 c h w -> (h w) c") for x in image_features]  # list of N * C tensors
             if all([feature.shape[0] == image_features[0].shape[0] for feature in image_features]):
                 image_features = torch.stack(image_features, dim=0)
+                
+                if not os.path.isfile(f'debugfile/image_tokens_{phase}.pt'):
+                    torch.save(image_features, f'debugfile/image_tokens_{phase}.pt')
+                # else:
+                #     raise NotImplementedError("Debug mode is enabled. Please remove the debugfile/image_tokens_train.pt file to continue.")
         else:
             image_features = self.get_vision_tower()(images)
             image_features = self.get_mm_projector()(image_features)
@@ -779,6 +803,10 @@ class LlavaMetaForCausalLM(ABC):
         attention_mask: Optional[torch.LongTensor] = None,
         **generation_kwargs,
     ):
+        
+        # add a forward for debug
+        self.forward(input_ids=input_ids, media=media, media_config=media_config, attention_mask=attention_mask)
+        return
         inputs_embeds, _, attention_mask = self._embed(input_ids, media, media_config, None, attention_mask)
         return self.llm.generate(inputs_embeds=inputs_embeds, attention_mask=attention_mask, **generation_kwargs)
 
