@@ -9,31 +9,29 @@ ViT input (image_{}):
 
 ViT output(image_features_{}):
 
-    Min:  0.888047
+    Min:  0.955817
 
-    Mean: 0.999577
-
-    \>0.95:     17404 (100.0%)
-
-    0.8-0.95:          4 (0.0%)
+    Mean: 0.999580
 
 #### mm_projector
 mlp output(features_after_mm_projector_{}):
 
-    Min:  0.966186
+    Min:  0.980824
 
-    Mean: 0.999402
+    Mean: 0.999418
 
 #### llm:(ignore last 50 tokens to avoid differencies caused by missing of \n after \<image\> token in evaluation)
 llm output(llm_outputs_{}):
 
-    Mean cosine similarity: 0.980196
+Mean cosine similarity: 0.981040
 
-    Min cosine similarity: -0.248717
+Min cosine similarity: 0.092365
 
-    Different tokens (< 0.95): 264
+Max cosine similarity: 0.999983
 
-    Total tokens: 3079
+Different tokens (< 0.95): 285
+
+Total tokens: 3079
 
 ## 2. use the first sample in vstar as the input
 
